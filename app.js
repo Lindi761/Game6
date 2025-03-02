@@ -1,126 +1,116 @@
 // 获取游戏画布
 const gameCanvas = document.getElementById('gameCanvas');
 
-// 初始化触摸状态
-let isTouching = false;
-let currentAction = null;
-
-// 处理触摸开始
-function handleTouchStart(event) {
-    event.preventDefault();
-    isTouching = true;
-    
-    const touch = event.touches[0];
-    const rect = gameCanvas.getBoundingClientRect();
-    const x = touch.clientX - rect.left;
-    
-    // 将屏幕分为三个区域：左、中、右
-    const screenWidth = gameCanvas.width;
-    const leftThird = screenWidth / 3;
-    const rightThird = screenWidth * 2 / 3;
-    
-    if (x < leftThird) {
-        currentAction = 'left';
-        console.log('向左移动');
-        // 这里调用游戏中的左移方法
-    } else if (x > rightThird) {
-        currentAction = 'right';
-        console.log('向右移动');
-        // 这里调用游戏中的右移方法
-    } else {
-        currentAction = 'jump';
-        console.log('跳跃');
-        // 这里调用游戏中的跳跃方法
-    }
-}
-
-// 处理触摸结束
-function handleTouchEnd(event) {
-    event.preventDefault();
-    isTouching = false;
-    currentAction = null;
-    console.log('停止动作');
-    // 这里调用停止移动的方法
-}
-
-// 处理触摸移动
-function handleTouchMove(event) {
-    if (!isTouching) return;
-    event.preventDefault();
-    
-    const touch = event.touches[0];
-    const rect = gameCanvas.getBoundingClientRect();
-    const x = touch.clientX - rect.left;
-    
-    // 将屏幕分为三个区域
-    const screenWidth = gameCanvas.width;
-    const leftThird = screenWidth / 3;
-    const rightThird = screenWidth * 2 / 3;
-    
-    let newAction;
-    if (x < leftThird) {
-        newAction = 'left';
-    } else if (x > rightThird) {
-        newAction = 'right';
-    } else {
-        newAction = 'jump';
-    }
-    
-    // 只在动作改变时触发
-    if (newAction !== currentAction) {
-        currentAction = newAction;
-        console.log(`切换到${currentAction}`);
-        // 这里调用相应的动作方法
-    }
-}
-
-// 添加触摸事件监听器
-gameCanvas.addEventListener('touchstart', handleTouchStart, { passive: false });
-gameCanvas.addEventListener('touchend', handleTouchEnd, { passive: false });
-gameCanvas.addEventListener('touchmove', handleTouchMove, { passive: false });
-
-// 添加提示区域的视觉反馈（可选）
-const overlay = document.createElement('div');
-overlay.style.cssText = `
-    position: absolute;
-    top: 0;
+// 创建控制按钮容器
+const controlsContainer = document.createElement('div');
+controlsContainer.style.cssText = `
+    position: fixed;
+    bottom: 20px;
     left: 0;
     width: 100%;
-    height: 100%;
-    pointer-events: none;
     display: flex;
-    opacity: 0.1;
+    justify-content: space-between;
+    padding: 20px;
+    box-sizing: border-box;
+    pointer-events: auto;
 `;
 
-const leftArea = document.createElement('div');
-leftArea.style.cssText = `
-    flex: 1;
-    background-color: blue;
+// 创建方向按钮容器（左右）
+const directionButtons = document.createElement('div');
+directionButtons.style.cssText = `
+    display: flex;
+    gap: 20px;
 `;
 
-const jumpArea = document.createElement('div');
-jumpArea.style.cssText = `
-    flex: 1;
-    background-color: green;
+// 创建左按钮
+const leftButton = document.createElement('button');
+leftButton.innerHTML = '←';
+leftButton.style.cssText = `
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px solid #333;
+    font-size: 24px;
+    cursor: pointer;
 `;
 
-const rightArea = document.createElement('div');
-rightArea.style.cssText = `
-    flex: 1;
-    background-color: blue;
+// 创建右按钮
+const rightButton = document.createElement('button');
+rightButton.innerHTML = '→';
+rightButton.style.cssText = `
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px solid #333;
+    font-size: 24px;
+    cursor: pointer;
 `;
 
-overlay.appendChild(leftArea);
-overlay.appendChild(jumpArea);
-overlay.appendChild(rightArea);
+// 创建跳跃按钮
+const jumpButton = document.createElement('button');
+jumpButton.innerHTML = '↑';
+jumpButton.style.cssText = `
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px solid #333;
+    font-size: 30px;
+    cursor: pointer;
+`;
 
-// 只在移动设备上显示区域提示
-if (isMobileDevice()) {
-    gameCanvas.parentElement.style.position = 'relative';
-    gameCanvas.parentElement.appendChild(overlay);
-}
+// 组装按钮
+directionButtons.appendChild(leftButton);
+directionButtons.appendChild(rightButton);
+controlsContainer.appendChild(directionButtons);
+controlsContainer.appendChild(jumpButton);
+
+// 添加按钮事件处理
+leftButton.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    console.log('向左移动');
+    // 这里调用向左移动的函数
+});
+
+leftButton.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    console.log('停止移动');
+    // 这里调用停止移动的函数
+});
+
+rightButton.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    console.log('向右移动');
+    // 这里调用向右移动的函数
+});
+
+rightButton.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    console.log('停止移动');
+    // 这里调用停止移动的函数
+});
+
+jumpButton.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    console.log('跳跃');
+    // 这里调用跳跃的函数
+});
 
 // 检测是否是移动设备
 function isMobileDevice() {
     return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
-} 
+}
+
+// 只在移动设备上显示控制按钮
+if (isMobileDevice()) {
+    document.body.appendChild(controlsContainer);
+}
+
+// 防止移动设备上的双击缩放
+document.addEventListener('touchstart', (e) => {
+    if (e.touches.length > 1) {
+        e.preventDefault();
+    }
+}, { passive: false }); 
