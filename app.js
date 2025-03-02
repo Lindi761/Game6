@@ -1,71 +1,109 @@
 // 获取游戏画布
 const gameCanvas = document.getElementById('gameCanvas');
 
-// 创建虚拟按钮区域
-const touchControls = {
-    left: { x: 50, y: 350, width: 60, height: 60 },
-    right: { x: 150, y: 350, width: 60, height: 60 },
-    jump: { x: 690, y: 350, width: 60, height: 60 }
-};
+// 添加虚拟按钮
+const virtualControls = document.createElement('div');
+virtualControls.className = 'virtual-controls';
+virtualControls.innerHTML = `
+    <button id="leftBtn" class="control-btn">←</button>
+    <button id="rightBtn" class="control-btn">→</button>
+    <button id="jumpBtn" class="control-btn">↑</button>
+`;
+gameCanvas.parentElement.appendChild(virtualControls);
 
-// 初始化触摸状态
-let isTouching = false;
-let touchX = 0;
-
-// 处理触摸开始
-function handleTouchStart(event) {
-    event.preventDefault();
-    const touch = event.touches[0];
-    const rect = gameCanvas.getBoundingClientRect();
-    touchX = touch.clientX - rect.left;
-    const touchY = touch.clientY - rect.top;
-
-    // 检测触摸位置并触发相应操作
-    if (touchY > gameCanvas.height * 0.7) { // 底部区域作为控制区
-        isTouching = true;
-        if (touchX < gameCanvas.width / 2) {
-            // 左半边屏幕触发左移
-            // 这里需要调用您游戏中的移动方法
-            console.log('向左移动');
-        } else {
-            // 右半边屏幕触发右移
-            console.log('向右移动');
+// 添加虚拟按钮的样式
+const style = document.createElement('style');
+style.textContent = `
+    .virtual-controls {
+        position: fixed;
+        bottom: 20px;
+        left: 0;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 20px;
+        box-sizing: border-box;
+    }
+    .control-btn {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        border: 2px solid #333;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        user-select: none;
+        touch-action: none;
+    }
+    @media (min-width: 800px) {
+        .virtual-controls {
+            display: none;
         }
-    } else {
-        // 屏幕上半部分触发跳跃
-        console.log('跳跃');
+    }
+`;
+document.head.appendChild(style);
+
+// 控制状态
+let isMovingLeft = false;
+let isMovingRight = false;
+let isJumping = false;
+
+// 触摸事件处理
+function handleButton(buttonId, isPressed) {
+    switch(buttonId) {
+        case 'leftBtn':
+            isMovingLeft = isPressed;
+            if (isPressed) {
+                // 调用向左移动的函数
+                console.log('向左移动');
+            }
+            break;
+        case 'rightBtn':
+            isMovingRight = isPressed;
+            if (isPressed) {
+                // 调用向右移动的函数
+                console.log('向右移动');
+            }
+            break;
+        case 'jumpBtn':
+            isJumping = isPressed;
+            if (isPressed) {
+                // 调用跳跃的函数
+                console.log('跳跃');
+            }
+            break;
     }
 }
 
-// 处理触摸移动
-function handleTouchMove(event) {
-    event.preventDefault();
-    if (!isTouching) return;
+// 为每个按钮添加触摸事件
+['leftBtn', 'rightBtn', 'jumpBtn'].forEach(btnId => {
+    const btn = document.getElementById(btnId);
     
-    const touch = event.touches[0];
-    const rect = gameCanvas.getBoundingClientRect();
-    const newTouchX = touch.clientX - rect.left;
-    
-    // 检测滑动方向
-    if (Math.abs(newTouchX - touchX) > 10) {
-        if (newTouchX < touchX) {
-            console.log('向左移动');
-        } else {
-            console.log('向右移动');
-        }
-    }
-    touchX = newTouchX;
+    btn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        handleButton(btnId, true);
+    });
+
+    btn.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        handleButton(btnId, false);
+    });
+
+    // 防止触摸移出按钮时卡住
+    btn.addEventListener('touchcancel', (e) => {
+        e.preventDefault();
+        handleButton(btnId, false);
+    });
+});
+
+// 检测是否是移动设备
+function isMobileDevice() {
+    return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
 }
 
-// 处理触摸结束
-function handleTouchEnd(event) {
-    event.preventDefault();
-    isTouching = false;
-    // 停止移动
-    console.log('停止移动');
-}
-
-// 添加触摸事件监听器
-gameCanvas.addEventListener('touchstart', handleTouchStart);
-gameCanvas.addEventListener('touchmove', handleTouchMove);
-gameCanvas.addEventListener('touchend', handleTouchEnd); 
+// 在页面加载时检测是否显示虚拟按钮
+window.addEventListener('load', () => {
+    virtualControls.style.display = isMobileDevice() ? 'flex' : 'none';
+}); 
