@@ -1,52 +1,53 @@
 // 等待 DOM 加载完成
 window.addEventListener('load', function() {
-    // 获取游戏画布和内容容器
-    const gameCanvas = document.getElementById('gameCanvas');
-    const gameContent = document.getElementById('gameContent');
-
+    console.log('Page loaded, setting up mobile controls');
+    
     // 创建控制按钮容器
     const controlsContainer = document.createElement('div');
+    controlsContainer.id = 'mobileControls';
     controlsContainer.style.cssText = `
         position: fixed;
-        bottom: 20px;
+        bottom: 50px;
         left: 0;
         width: 100%;
         display: flex;
-        justify-content: space-between;
-        padding: 20px;
+        justify-content: center;
+        padding: 10px;
         box-sizing: border-box;
-        z-index: 9999;
+        z-index: 99999;
         pointer-events: auto;
     `;
 
     // 通用按钮样式
     const buttonStyle = `
-        width: 60px;
-        height: 60px;
+        width: 70px;
+        height: 70px;
         border-radius: 50%;
-        background: rgba(0, 0, 0, 0.7);
-        border: 3px solid white;
+        background: rgba(0, 0, 0, 0.8);
+        border: 4px solid white;
         color: white;
-        font-size: 24px;
+        font-size: 30px;
+        font-weight: bold;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
         user-select: none;
         position: relative;
-        z-index: 10000;
+        z-index: 100000;
         -webkit-appearance: none;
         -webkit-tap-highlight-color: transparent;
         touch-action: manipulation;
+        margin: 5px;
     `;
 
     // 创建方向键容器
     const directionPad = document.createElement('div');
     directionPad.style.cssText = `
         display: grid;
-        grid-template-columns: repeat(3, 60px);
-        grid-template-rows: repeat(3, 60px);
-        gap: 5px;
+        grid-template-columns: repeat(3, 70px);
+        grid-template-rows: repeat(3, 70px);
+        gap: 10px;
     `;
 
     // 创建方向按钮
@@ -83,10 +84,12 @@ window.addEventListener('load', function() {
 
     // 模拟键盘事件
     function simulateKeyEvent(keyCode, type) {
+        console.log('Simulating key event:', type, keyCode);
         const event = new KeyboardEvent(type, {
             bubbles: true,
             cancelable: true,
-            keyCode: keyCode
+            keyCode: keyCode,
+            which: keyCode
         });
         document.dispatchEvent(event);
     }
@@ -101,73 +104,77 @@ window.addEventListener('load', function() {
     upButton.addEventListener('touchstart', (e) => {
         e.preventDefault();
         simulateKeyEvent(KEY_UP, 'keydown');
-        upButton.style.background = 'rgba(0, 0, 0, 0.9)';
+        upButton.style.background = 'rgba(76, 175, 80, 0.9)';
+        console.log('Up button pressed');
     });
 
     upButton.addEventListener('touchend', (e) => {
         e.preventDefault();
         simulateKeyEvent(KEY_UP, 'keyup');
-        upButton.style.background = 'rgba(0, 0, 0, 0.7)';
+        upButton.style.background = 'rgba(0, 0, 0, 0.8)';
     });
 
     downButton.addEventListener('touchstart', (e) => {
         e.preventDefault();
         simulateKeyEvent(KEY_DOWN, 'keydown');
-        downButton.style.background = 'rgba(0, 0, 0, 0.9)';
+        downButton.style.background = 'rgba(76, 175, 80, 0.9)';
+        console.log('Down button pressed');
     });
 
     downButton.addEventListener('touchend', (e) => {
         e.preventDefault();
         simulateKeyEvent(KEY_DOWN, 'keyup');
-        downButton.style.background = 'rgba(0, 0, 0, 0.7)';
+        downButton.style.background = 'rgba(0, 0, 0, 0.8)';
     });
 
     leftButton.addEventListener('touchstart', (e) => {
         e.preventDefault();
         simulateKeyEvent(KEY_LEFT, 'keydown');
-        leftButton.style.background = 'rgba(0, 0, 0, 0.9)';
+        leftButton.style.background = 'rgba(76, 175, 80, 0.9)';
+        console.log('Left button pressed');
     });
 
     leftButton.addEventListener('touchend', (e) => {
         e.preventDefault();
         simulateKeyEvent(KEY_LEFT, 'keyup');
-        leftButton.style.background = 'rgba(0, 0, 0, 0.7)';
+        leftButton.style.background = 'rgba(0, 0, 0, 0.8)';
     });
 
     rightButton.addEventListener('touchstart', (e) => {
         e.preventDefault();
         simulateKeyEvent(KEY_RIGHT, 'keydown');
-        rightButton.style.background = 'rgba(0, 0, 0, 0.9)';
+        rightButton.style.background = 'rgba(76, 175, 80, 0.9)';
+        console.log('Right button pressed');
     });
 
     rightButton.addEventListener('touchend', (e) => {
         e.preventDefault();
         simulateKeyEvent(KEY_RIGHT, 'keyup');
-        rightButton.style.background = 'rgba(0, 0, 0, 0.7)';
+        rightButton.style.background = 'rgba(0, 0, 0, 0.8)';
     });
 
     // 检测是否是移动设备
     function isMobileDevice() {
-        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        console.log('User agent:', userAgent);
+        return /iPhone|iPad|iPod|Android/i.test(userAgent);
     }
 
-    // 添加控制按钮到页面
+    // 立即添加控制按钮到页面
     if (isMobileDevice()) {
+        console.log('Mobile device detected, adding controls');
         document.body.appendChild(controlsContainer);
-        console.log('移动设备控制按钮已添加');
         
-        // 确保按钮可见
-        controlsContainer.style.display = 'flex';
-        
-        // 修改原有的 startGame 函数
-        const originalStartGame = window.startGame;
-        window.startGame = function() {
-            if (originalStartGame) originalStartGame();
-            controlsContainer.style.display = 'flex';
-            console.log('游戏开始，显示控制按钮');
-        };
+        // 确保按钮在所有情况下都可见
+        setTimeout(function() {
+            console.log('Ensuring controls are visible');
+            const controls = document.getElementById('mobileControls');
+            if (controls) {
+                controls.style.display = 'flex';
+            }
+        }, 1000);
     } else {
-        console.log('非移动设备，不添加控制按钮');
+        console.log('Not a mobile device, skipping controls');
     }
 });
 
@@ -180,4 +187,10 @@ document.addEventListener('touchmove', function(e) {
 
 document.addEventListener('gesturestart', function(e) {
     e.preventDefault();
-}, { passive: false }); 
+}, { passive: false });
+
+// 添加视口设置以确保正确缩放
+const viewportMeta = document.createElement('meta');
+viewportMeta.name = 'viewport';
+viewportMeta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+document.head.appendChild(viewportMeta); 
