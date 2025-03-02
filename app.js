@@ -1,91 +1,78 @@
-// 等待 DOM 加载完成
-window.addEventListener('load', function() {
-    console.log('Page loaded, setting up mobile controls');
-    
-    // 创建控制按钮容器
-    const controlsContainer = document.createElement('div');
-    controlsContainer.id = 'mobileControls';
-    controlsContainer.style.cssText = `
-        position: fixed;
-        bottom: 50px;
-        left: 0;
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        padding: 10px;
-        box-sizing: border-box;
-        z-index: 99999;
-        pointer-events: auto;
-    `;
+// 移动设备控制器代码
+(function() {
+    // 立即执行函数，确保代码尽快运行
 
-    // 通用按钮样式
-    const buttonStyle = `
-        width: 70px;
-        height: 70px;
-        border-radius: 50%;
-        background: rgba(0, 0, 0, 0.8);
-        border: 4px solid white;
-        color: white;
-        font-size: 30px;
-        font-weight: bold;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        user-select: none;
-        position: relative;
-        z-index: 100000;
-        -webkit-appearance: none;
-        -webkit-tap-highlight-color: transparent;
-        touch-action: manipulation;
-        margin: 5px;
-    `;
-
-    // 创建方向键容器
-    const directionPad = document.createElement('div');
-    directionPad.style.cssText = `
-        display: grid;
-        grid-template-columns: repeat(3, 70px);
-        grid-template-rows: repeat(3, 70px);
-        gap: 10px;
-    `;
-
-    // 创建方向按钮
-    const upButton = document.createElement('button');
-    const downButton = document.createElement('button');
-    const leftButton = document.createElement('button');
-    const rightButton = document.createElement('button');
-
-    // 设置按钮文本和样式
-    upButton.innerHTML = '↑';
-    downButton.innerHTML = '↓';
-    leftButton.innerHTML = '←';
-    rightButton.innerHTML = '→';
-
-    [upButton, downButton, leftButton, rightButton].forEach(button => {
-        button.style.cssText = buttonStyle;
-    });
-
-    // 创建方向键布局
-    for (let i = 0; i < 9; i++) {
-        const cell = document.createElement('div');
-        cell.style.cssText = 'display: flex; justify-content: center; align-items: center;';
+    // 创建样式
+    const style = document.createElement('style');
+    style.textContent = `
+        .mobile-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            box-sizing: border-box;
+            z-index: 999999;
+        }
         
-        if (i === 1) cell.appendChild(upButton);
-        else if (i === 3) cell.appendChild(leftButton);
-        else if (i === 5) cell.appendChild(rightButton);
-        else if (i === 7) cell.appendChild(downButton);
+        .control-button {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 3px solid white;
+            border-radius: 50%;
+            color: white;
+            font-size: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
         
-        directionPad.appendChild(cell);
+        .control-button:active {
+            background-color: rgba(76, 175, 80, 0.9);
+        }
+        
+        .direction-pad {
+            display: flex;
+            gap: 10px;
+        }
+    `;
+    document.head.appendChild(style);
+
+    // 创建HTML元素
+    const controlsHTML = `
+        <div class="mobile-controls" id="mobileControls">
+            <div class="direction-pad">
+                <div class="control-button" id="leftBtn">←</div>
+                <div class="control-button" id="rightBtn">→</div>
+            </div>
+            <div class="direction-pad">
+                <div class="control-button" id="upBtn">↑</div>
+                <div class="control-button" id="downBtn">↓</div>
+            </div>
+        </div>
+    `;
+
+    // 添加视口设置
+    const viewportMeta = document.createElement('meta');
+    viewportMeta.name = 'viewport';
+    viewportMeta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+    document.head.appendChild(viewportMeta);
+
+    // 检测是否是移动设备
+    function isMobileDevice() {
+        return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     }
 
-    // 组装控制器
-    controlsContainer.appendChild(directionPad);
-
     // 模拟键盘事件
-    function simulateKeyEvent(keyCode, type) {
-        console.log('Simulating key event:', type, keyCode);
-        const event = new KeyboardEvent(type, {
+    function simulateKey(keyCode, isDown) {
+        const eventType = isDown ? 'keydown' : 'keyup';
+        const event = new KeyboardEvent(eventType, {
             bubbles: true,
             cancelable: true,
             keyCode: keyCode,
@@ -100,97 +87,102 @@ window.addEventListener('load', function() {
     const KEY_LEFT = 37;
     const KEY_RIGHT = 39;
 
-    // 添加按钮事件处理
-    upButton.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        simulateKeyEvent(KEY_UP, 'keydown');
-        upButton.style.background = 'rgba(76, 175, 80, 0.9)';
-        console.log('Up button pressed');
-    });
-
-    upButton.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        simulateKeyEvent(KEY_UP, 'keyup');
-        upButton.style.background = 'rgba(0, 0, 0, 0.8)';
-    });
-
-    downButton.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        simulateKeyEvent(KEY_DOWN, 'keydown');
-        downButton.style.background = 'rgba(76, 175, 80, 0.9)';
-        console.log('Down button pressed');
-    });
-
-    downButton.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        simulateKeyEvent(KEY_DOWN, 'keyup');
-        downButton.style.background = 'rgba(0, 0, 0, 0.8)';
-    });
-
-    leftButton.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        simulateKeyEvent(KEY_LEFT, 'keydown');
-        leftButton.style.background = 'rgba(76, 175, 80, 0.9)';
-        console.log('Left button pressed');
-    });
-
-    leftButton.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        simulateKeyEvent(KEY_LEFT, 'keyup');
-        leftButton.style.background = 'rgba(0, 0, 0, 0.8)';
-    });
-
-    rightButton.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        simulateKeyEvent(KEY_RIGHT, 'keydown');
-        rightButton.style.background = 'rgba(76, 175, 80, 0.9)';
-        console.log('Right button pressed');
-    });
-
-    rightButton.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        simulateKeyEvent(KEY_RIGHT, 'keyup');
-        rightButton.style.background = 'rgba(0, 0, 0, 0.8)';
-    });
-
-    // 检测是否是移动设备
-    function isMobileDevice() {
-        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-        console.log('User agent:', userAgent);
-        return /iPhone|iPad|iPod|Android/i.test(userAgent);
-    }
-
-    // 立即添加控制按钮到页面
-    if (isMobileDevice()) {
-        console.log('Mobile device detected, adding controls');
-        document.body.appendChild(controlsContainer);
+    // 添加控制器到页面
+    function addControls() {
+        // 创建一个临时容器
+        const temp = document.createElement('div');
+        temp.innerHTML = controlsHTML;
         
-        // 确保按钮在所有情况下都可见
-        setTimeout(function() {
-            console.log('Ensuring controls are visible');
-            const controls = document.getElementById('mobileControls');
-            if (controls) {
-                controls.style.display = 'flex';
+        // 将控制器添加到body
+        document.body.appendChild(temp.firstElementChild);
+        
+        console.log('Mobile controls added to page');
+        
+        // 添加事件监听器
+        document.getElementById('leftBtn').addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            simulateKey(KEY_LEFT, true);
+        });
+        
+        document.getElementById('leftBtn').addEventListener('touchend', function(e) {
+            e.preventDefault();
+            simulateKey(KEY_LEFT, false);
+        });
+        
+        document.getElementById('rightBtn').addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            simulateKey(KEY_RIGHT, true);
+        });
+        
+        document.getElementById('rightBtn').addEventListener('touchend', function(e) {
+            e.preventDefault();
+            simulateKey(KEY_RIGHT, false);
+        });
+        
+        document.getElementById('upBtn').addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            simulateKey(KEY_UP, true);
+        });
+        
+        document.getElementById('upBtn').addEventListener('touchend', function(e) {
+            e.preventDefault();
+            simulateKey(KEY_UP, false);
+        });
+        
+        document.getElementById('downBtn').addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            simulateKey(KEY_DOWN, true);
+        });
+        
+        document.getElementById('downBtn').addEventListener('touchend', function(e) {
+            e.preventDefault();
+            simulateKey(KEY_DOWN, false);
+        });
+    }
+
+    // 在页面加载完成后添加控制器
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            if (isMobileDevice()) {
+                console.log('Mobile device detected, adding controls on DOMContentLoaded');
+                addControls();
             }
-        }, 1000);
+        });
     } else {
-        console.log('Not a mobile device, skipping controls');
+        if (isMobileDevice()) {
+            console.log('Mobile device detected, adding controls immediately');
+            addControls();
+        }
     }
-});
 
-// 防止页面缩放和其他默认行为
-document.addEventListener('touchmove', function(e) {
-    if (e.touches.length > 1) {
+    // 防止页面缩放
+    document.addEventListener('touchmove', function(e) {
+        if (e.touches.length > 1) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    document.addEventListener('gesturestart', function(e) {
         e.preventDefault();
+    }, { passive: false });
+})();
+
+// 确保控制器在游戏开始后也可见
+window.addEventListener('load', function() {
+    // 如果存在startGame函数，修改它
+    if (typeof window.startGame === 'function') {
+        const originalStartGame = window.startGame;
+        window.startGame = function() {
+            originalStartGame();
+            
+            // 确保控制器在游戏开始后可见
+            setTimeout(function() {
+                const controls = document.getElementById('mobileControls');
+                if (controls) {
+                    controls.style.display = 'flex';
+                    console.log('Controls visibility ensured after game start');
+                }
+            }, 500);
+        };
     }
-}, { passive: false });
-
-document.addEventListener('gesturestart', function(e) {
-    e.preventDefault();
-}, { passive: false });
-
-// 添加视口设置以确保正确缩放
-const viewportMeta = document.createElement('meta');
-viewportMeta.name = 'viewport';
-viewportMeta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
-document.head.appendChild(viewportMeta); 
+}); 
