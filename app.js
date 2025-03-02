@@ -1,7 +1,8 @@
 // 等待 DOM 加载完成
 window.addEventListener('load', function() {
-    // 获取游戏画布
+    // 获取游戏画布和内容容器
     const gameCanvas = document.getElementById('gameCanvas');
+    const gameContent = document.getElementById('gameContent');
 
     // 创建控制按钮容器
     const controlsContainer = document.createElement('div');
@@ -15,6 +16,7 @@ window.addEventListener('load', function() {
         padding: 20px;
         box-sizing: border-box;
         z-index: 9999;
+        pointer-events: auto;
     `;
 
     // 通用按钮样式
@@ -33,6 +35,9 @@ window.addEventListener('load', function() {
         user-select: none;
         position: relative;
         z-index: 10000;
+        -webkit-appearance: none;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
     `;
 
     // 创建左按钮
@@ -111,16 +116,30 @@ window.addEventListener('load', function() {
 
     // 添加控制按钮到页面
     if (isMobileDevice()) {
-        document.body.appendChild(controlsContainer);
+        // 将按钮添加到 gameContent 而不是 body
+        gameContent.appendChild(controlsContainer);
         console.log('移动设备控制按钮已添加');
+        
+        // 修改原有的 startGame 函数
+        const originalStartGame = window.startGame;
+        window.startGame = function() {
+            if (originalStartGame) originalStartGame();
+            gameContent.style.display = 'block';
+            controlsContainer.style.display = 'flex';
+            console.log('游戏开始，显示控制按钮');
+        };
     } else {
         console.log('非移动设备，不添加控制按钮');
     }
 });
 
-// 防止页面缩放
+// 防止页面缩放和其他默认行为
 document.addEventListener('touchmove', function(e) {
     if (e.touches.length > 1) {
         e.preventDefault();
     }
+}, { passive: false });
+
+document.addEventListener('gesturestart', function(e) {
+    e.preventDefault();
 }, { passive: false }); 
