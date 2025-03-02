@@ -81,26 +81,70 @@ window.addEventListener('load', function() {
     // 组装控制器
     controlsContainer.appendChild(directionPad);
 
+    // 模拟键盘事件
+    function simulateKeyEvent(keyCode, type) {
+        const event = new KeyboardEvent(type, {
+            bubbles: true,
+            cancelable: true,
+            keyCode: keyCode
+        });
+        document.dispatchEvent(event);
+    }
+
+    // 键盘按键代码
+    const KEY_UP = 38;
+    const KEY_DOWN = 40;
+    const KEY_LEFT = 37;
+    const KEY_RIGHT = 39;
+
     // 添加按钮事件处理
-    const handleButtonPress = (button, action) => {
-        button.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            console.log(action);
-            button.style.background = 'rgba(0, 0, 0, 0.9)';
-        });
+    upButton.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        simulateKeyEvent(KEY_UP, 'keydown');
+        upButton.style.background = 'rgba(0, 0, 0, 0.9)';
+    });
 
-        button.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            console.log('停止' + action);
-            button.style.background = 'rgba(0, 0, 0, 0.7)';
-        });
-    };
+    upButton.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        simulateKeyEvent(KEY_UP, 'keyup');
+        upButton.style.background = 'rgba(0, 0, 0, 0.7)';
+    });
 
-    // 为每个按钮添加事件
-    handleButtonPress(upButton, '向上移动/跳跃');
-    handleButtonPress(downButton, '向下移动/蹲下');
-    handleButtonPress(leftButton, '向左移动');
-    handleButtonPress(rightButton, '向右移动');
+    downButton.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        simulateKeyEvent(KEY_DOWN, 'keydown');
+        downButton.style.background = 'rgba(0, 0, 0, 0.9)';
+    });
+
+    downButton.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        simulateKeyEvent(KEY_DOWN, 'keyup');
+        downButton.style.background = 'rgba(0, 0, 0, 0.7)';
+    });
+
+    leftButton.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        simulateKeyEvent(KEY_LEFT, 'keydown');
+        leftButton.style.background = 'rgba(0, 0, 0, 0.9)';
+    });
+
+    leftButton.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        simulateKeyEvent(KEY_LEFT, 'keyup');
+        leftButton.style.background = 'rgba(0, 0, 0, 0.7)';
+    });
+
+    rightButton.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        simulateKeyEvent(KEY_RIGHT, 'keydown');
+        rightButton.style.background = 'rgba(0, 0, 0, 0.9)';
+    });
+
+    rightButton.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        simulateKeyEvent(KEY_RIGHT, 'keyup');
+        rightButton.style.background = 'rgba(0, 0, 0, 0.7)';
+    });
 
     // 检测是否是移动设备
     function isMobileDevice() {
@@ -109,14 +153,16 @@ window.addEventListener('load', function() {
 
     // 添加控制按钮到页面
     if (isMobileDevice()) {
-        gameContent.appendChild(controlsContainer);
+        document.body.appendChild(controlsContainer);
         console.log('移动设备控制按钮已添加');
+        
+        // 确保按钮可见
+        controlsContainer.style.display = 'flex';
         
         // 修改原有的 startGame 函数
         const originalStartGame = window.startGame;
         window.startGame = function() {
             if (originalStartGame) originalStartGame();
-            gameContent.style.display = 'block';
             controlsContainer.style.display = 'flex';
             console.log('游戏开始，显示控制按钮');
         };
