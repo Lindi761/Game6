@@ -21,13 +21,13 @@ window.addEventListener('load', function() {
 
     // 通用按钮样式
     const buttonStyle = `
-        width: 70px;
-        height: 70px;
+        width: 60px;
+        height: 60px;
         border-radius: 50%;
         background: rgba(0, 0, 0, 0.7);
         border: 3px solid white;
         color: white;
-        font-size: 30px;
+        font-size: 24px;
         cursor: pointer;
         display: flex;
         align-items: center;
@@ -40,74 +40,67 @@ window.addEventListener('load', function() {
         touch-action: manipulation;
     `;
 
-    // 创建左按钮
+    // 创建方向键容器
+    const directionPad = document.createElement('div');
+    directionPad.style.cssText = `
+        display: grid;
+        grid-template-columns: repeat(3, 60px);
+        grid-template-rows: repeat(3, 60px);
+        gap: 5px;
+    `;
+
+    // 创建方向按钮
+    const upButton = document.createElement('button');
+    const downButton = document.createElement('button');
     const leftButton = document.createElement('button');
-    leftButton.innerHTML = '←';
-    leftButton.style.cssText = buttonStyle;
-
-    // 创建右按钮
     const rightButton = document.createElement('button');
+
+    // 设置按钮文本和样式
+    upButton.innerHTML = '↑';
+    downButton.innerHTML = '↓';
+    leftButton.innerHTML = '←';
     rightButton.innerHTML = '→';
-    rightButton.style.cssText = buttonStyle;
 
-    // 创建跳跃按钮
-    const jumpButton = document.createElement('button');
-    jumpButton.innerHTML = '↑';
-    jumpButton.style.cssText = buttonStyle + `
-        width: 90px;
-        height: 90px;
-        font-size: 40px;
-        background: rgba(76, 175, 80, 0.7);
-    `;
+    [upButton, downButton, leftButton, rightButton].forEach(button => {
+        button.style.cssText = buttonStyle;
+    });
 
-    // 创建按钮组容器
-    const leftGroup = document.createElement('div');
-    leftGroup.style.cssText = `
-        display: flex;
-        gap: 20px;
-    `;
+    // 创建方向键布局
+    for (let i = 0; i < 9; i++) {
+        const cell = document.createElement('div');
+        cell.style.cssText = 'display: flex; justify-content: center; align-items: center;';
+        
+        if (i === 1) cell.appendChild(upButton);
+        else if (i === 3) cell.appendChild(leftButton);
+        else if (i === 5) cell.appendChild(rightButton);
+        else if (i === 7) cell.appendChild(downButton);
+        
+        directionPad.appendChild(cell);
+    }
 
-    // 组装按钮
-    leftGroup.appendChild(leftButton);
-    leftGroup.appendChild(rightButton);
-    controlsContainer.appendChild(leftGroup);
-    controlsContainer.appendChild(jumpButton);
+    // 组装控制器
+    controlsContainer.appendChild(directionPad);
 
     // 添加按钮事件处理
-    leftButton.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        console.log('向左移动');
-        leftButton.style.background = 'rgba(0, 0, 0, 0.9)';
-    });
+    const handleButtonPress = (button, action) => {
+        button.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            console.log(action);
+            button.style.background = 'rgba(0, 0, 0, 0.9)';
+        });
 
-    leftButton.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        console.log('停止移动');
-        leftButton.style.background = 'rgba(0, 0, 0, 0.7)';
-    });
+        button.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            console.log('停止' + action);
+            button.style.background = 'rgba(0, 0, 0, 0.7)';
+        });
+    };
 
-    rightButton.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        console.log('向右移动');
-        rightButton.style.background = 'rgba(0, 0, 0, 0.9)';
-    });
-
-    rightButton.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        console.log('停止移动');
-        rightButton.style.background = 'rgba(0, 0, 0, 0.7)';
-    });
-
-    jumpButton.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        console.log('跳跃');
-        jumpButton.style.background = 'rgba(76, 175, 80, 0.9)';
-    });
-
-    jumpButton.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        jumpButton.style.background = 'rgba(76, 175, 80, 0.7)';
-    });
+    // 为每个按钮添加事件
+    handleButtonPress(upButton, '向上移动/跳跃');
+    handleButtonPress(downButton, '向下移动/蹲下');
+    handleButtonPress(leftButton, '向左移动');
+    handleButtonPress(rightButton, '向右移动');
 
     // 检测是否是移动设备
     function isMobileDevice() {
@@ -116,7 +109,6 @@ window.addEventListener('load', function() {
 
     // 添加控制按钮到页面
     if (isMobileDevice()) {
-        // 将按钮添加到 gameContent 而不是 body
         gameContent.appendChild(controlsContainer);
         console.log('移动设备控制按钮已添加');
         
