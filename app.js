@@ -12,7 +12,7 @@ controlsContainer.style.cssText = `
     justify-content: space-between;
     padding: 20px;
     box-sizing: border-box;
-    pointer-events: auto;
+    z-index: 1000;  // 确保按钮在最上层
 `;
 
 // 创建方向按钮容器（左右）
@@ -22,44 +22,62 @@ directionButtons.style.cssText = `
     gap: 20px;
 `;
 
+// 通用按钮样式
+const buttonStyle = `
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    border: 3px solid white;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transition: transform 0.1s, background 0.1s;
+`;
+
 // 创建左按钮
 const leftButton = document.createElement('button');
 leftButton.innerHTML = '←';
-leftButton.style.cssText = `
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.8);
-    border: 2px solid #333;
-    font-size: 24px;
-    cursor: pointer;
-`;
+leftButton.style.cssText = buttonStyle;
 
 // 创建右按钮
 const rightButton = document.createElement('button');
 rightButton.innerHTML = '→';
-rightButton.style.cssText = `
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.8);
-    border: 2px solid #333;
-    font-size: 24px;
-    cursor: pointer;
-`;
+rightButton.style.cssText = buttonStyle;
 
 // 创建跳跃按钮
 const jumpButton = document.createElement('button');
 jumpButton.innerHTML = '↑';
-jumpButton.style.cssText = `
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.8);
-    border: 2px solid #333;
-    font-size: 30px;
-    cursor: pointer;
+jumpButton.style.cssText = buttonStyle + `
+    width: 90px;
+    height: 90px;
+    font-size: 40px;
+    background: rgba(76, 175, 80, 0.5);  // 绿色背景
 `;
+
+// 添加按钮按下效果
+const buttons = [leftButton, rightButton, jumpButton];
+buttons.forEach(button => {
+    button.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        button.style.transform = 'scale(0.95)';
+        button.style.background = button === jumpButton ? 
+            'rgba(76, 175, 80, 0.8)' : 'rgba(0, 0, 0, 0.8)';
+    });
+
+    button.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        button.style.transform = 'scale(1)';
+        button.style.background = button === jumpButton ? 
+            'rgba(76, 175, 80, 0.5)' : 'rgba(0, 0, 0, 0.5)';
+    });
+});
 
 // 组装按钮
 directionButtons.appendChild(leftButton);
@@ -100,12 +118,15 @@ jumpButton.addEventListener('touchstart', (e) => {
 
 // 检测是否是移动设备
 function isMobileDevice() {
-    return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
+    return (typeof window.orientation !== "undefined") || 
+           (navigator.userAgent.indexOf('IEMobile') !== -1) ||
+           (navigator.userAgent.match(/mobile|android|iphone|ipad|tablet/i));
 }
 
 // 只在移动设备上显示控制按钮
 if (isMobileDevice()) {
     document.body.appendChild(controlsContainer);
+    console.log('移动设备控制按钮已添加');
 }
 
 // 防止移动设备上的双击缩放
