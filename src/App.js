@@ -5,14 +5,14 @@ import MobileControls from './components/MobileControls';
 import './App.css';
 
 function App() {
-  const [isMobile, setIsMobile] = useState(false);
+  // Force isMobile to be true
+  const [isMobile, setIsMobile] = useState(true);
 
   useEffect(() => {
+    // Keep the resize listener just in case we need it later
     const checkMobile = () => {
-      const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      console.log('User Agent:', navigator.userAgent);
-      console.log('Is Mobile:', mobile);
-      setIsMobile(mobile);
+      console.log('Mobile controls should be visible');
+      setIsMobile(true); // Always true
     };
     
     checkMobile();
@@ -27,7 +27,7 @@ function App() {
     <div className="App">
       <GameContextProvider>
         <Game />
-        {isMobile && <MobileControls />}
+        <MobileControls /> {/* Always render MobileControls */}
         <div style={{position: 'fixed', bottom: 0, left: 0, background: 'rgba(0,0,0,0.5)', color: 'white', padding: '5px', fontSize: '12px'}}>
           Debug: isMobile={isMobile.toString()}
         </div>
