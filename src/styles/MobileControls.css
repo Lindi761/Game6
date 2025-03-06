@@ -1,0 +1,91 @@
+.mobile-controls {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 100;
+}
+
+/* Portrait mode controls */
+.mobile-controls.portrait {
+  padding: 10px;
+  justify-content: space-around;
+}
+
+.portrait-controls {
+  display: flex;
+  gap: 20px;
+}
+
+/* Landscape mode controls */
+.mobile-controls.landscape {
+  justify-content: space-between;
+  bottom: 20px;
+  width: 100%;
+}
+
+.left-controls, .right-controls {
+  display: flex;
+  padding: 10px;
+}
+
+.left-controls {
+  position: absolute;
+  left: 20px;
+  bottom: 0;
+}
+
+.right-controls {
+  position: absolute;
+  right: 20px;
+  bottom: 0;
+}
+
+.directional-keys {
+  display: flex;
+  gap: 10px;
+}
+
+/* Button styles */
+.control-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  color: white;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.control-btn:active {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Media query for landscape orientation */
+@media (orientation: landscape) {
+  .left-controls .directional-keys {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+  }
+  
+  .right-controls .directional-keys {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .right-controls .up-btn {
+    margin-bottom: -5px;
+  }
+  
+  .right-controls .down-btn {
+    margin-top: -5px;
+  }
+} 
