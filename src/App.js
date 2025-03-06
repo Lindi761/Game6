@@ -8,9 +8,11 @@ function App() {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    // Check if the device is mobile
     const checkMobile = () => {
-      setIsMobile(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+      const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      console.log('User Agent:', navigator.userAgent);
+      console.log('Is Mobile:', mobile);
+      setIsMobile(mobile);
     };
     
     checkMobile();
@@ -26,6 +28,9 @@ function App() {
       <GameContextProvider>
         <Game />
         {isMobile && <MobileControls />}
+        <div style={{position: 'fixed', bottom: 0, left: 0, background: 'rgba(0,0,0,0.5)', color: 'white', padding: '5px', fontSize: '12px'}}>
+          Debug: isMobile={isMobile.toString()}
+        </div>
       </GameContextProvider>
     </div>
   );

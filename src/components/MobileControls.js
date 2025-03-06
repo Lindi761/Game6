@@ -5,23 +5,41 @@ import '../styles/MobileControls.css';
 const MobileControls = () => {
   const { handleKeyDown, handleKeyUp, isLandscape } = useContext(GameContext);
 
+  useEffect(() => {
+    console.log('MobileControls mounted');
+    console.log('isLandscape:', isLandscape);
+  }, [isLandscape]);
+
   // Handle touch events for mobile controls
   const handleTouchStart = (key) => {
+    console.log('Touch start:', key);
     handleKeyDown({ key });
   };
 
   const handleTouchEnd = (key) => {
+    console.log('Touch end:', key);
     handleKeyUp({ key });
   };
 
   // Create touch event handlers with proper binding
   const createTouchHandlers = (key) => {
     return {
-      onTouchStart: () => handleTouchStart(key),
-      onTouchEnd: () => handleTouchEnd(key),
-      onTouchCancel: () => handleTouchEnd(key),
+      onTouchStart: (e) => {
+        e.preventDefault();
+        handleTouchStart(key);
+      },
+      onTouchEnd: (e) => {
+        e.preventDefault();
+        handleTouchEnd(key);
+      },
+      onTouchCancel: (e) => {
+        e.preventDefault();
+        handleTouchEnd(key);
+      },
     };
   };
+
+  console.log('Rendering MobileControls, isLandscape:', isLandscape);
 
   return (
     <div className={`mobile-controls ${isLandscape ? 'landscape' : 'portrait'}`}>
@@ -66,6 +84,18 @@ const MobileControls = () => {
           </button>
         </div>
       )}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        background: 'rgba(0,0,0,0.5)',
+        color: 'white',
+        padding: '5px',
+        fontSize: '12px',
+        zIndex: 2000
+      }}>
+        Controls Debug: Landscape={isLandscape.toString()}
+      </div>
     </div>
   );
 };
